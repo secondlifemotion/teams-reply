@@ -5,8 +5,13 @@
   "description": "An AI reply assistant for the Microsoft Teams Web application.",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
   "host_permissions": [
     "*://teams.microsoft.com/*"
   ],
