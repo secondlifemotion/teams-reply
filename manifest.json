@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Teams AI Reply Assistant",
+  "version": "1.0",
+  "description": "An AI reply assistant for the Microsoft Teams Web application.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://teams.microsoft.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://teams.microsoft.com/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ]
+}
