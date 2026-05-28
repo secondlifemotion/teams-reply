@@ -32,6 +32,13 @@ function scrapeChatHistory() {
  * @param {string} reply - The reply text to inject.
  */
 function injectReply(reply) {
+  console.log('AI Reply Assistant: Generated Reply:', reply);
+
+  if (!reply || reply.trim() === '') {
+    console.warn('AI Reply Assistant: Generated reply is empty. Nothing to inject.');
+    return;
+  }
+
   // The compose box in Teams is usually a rich text editor (contenteditable)
   // We look for common attributes or roles
   const composeBox = document.querySelector('div[contenteditable="true"], div[data-tid="ckeditor-compose-area"]');
@@ -50,6 +57,15 @@ function injectReply(reply) {
       // Dispatch an input event so any React/Angular bindings notice the change
       composeBox.dispatchEvent(new Event('input', { bubbles: true }));
     }
+
+    // Verify if injection worked (either via execCommand or fallback)
+    setTimeout(() => {
+      if (!composeBox.textContent.includes(reply.trim()) && !composeBox.innerHTML.includes(reply.trim())) {
+        console.warn('AI Reply Assistant: Injection seemingly failed. Triggering fallback alert.');
+        alert('AI Reply (Injection failed, please copy manually):\n\n' + reply);
+      }
+    }, 100);
+
   } else {
     alert('AI Reply: Could not find the compose box to insert the text. Please copy this manually:\n\n' + reply);
   }
