@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         // Retrieve settings from storage
         const settings = await new Promise((resolve) => {
           chrome.storage.local.get(
-            { provider: 'ollama', ollamaModel: 'llama3', geminiApiKey: '' },
+            { provider: 'ollama', ollamaModel: 'llama3', geminiModel: 'gemini-2.5-flash', geminiApiKey: '' },
             resolve
           );
         });
@@ -51,7 +51,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           }
 
           // Use the recommended model for general text generation
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${settings.geminiApiKey}`, {
+          const geminiModel = settings.geminiModel || 'gemini-2.5-flash';
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${settings.geminiApiKey}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

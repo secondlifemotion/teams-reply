@@ -65,8 +65,14 @@
   </div>
 
   <div id="geminiSettings" class="form-group hidden">
-    <label for="geminiApiKey">Google Studio API Key:</label>
-    <input type="password" id="geminiApiKey" placeholder="Enter Gemini API Key">
+    <div style="margin-bottom: 10px;">
+      <label for="geminiModel">Gemini Model Name:</label>
+      <input type="text" id="geminiModel" placeholder="e.g., gemini-2.5-flash" value="gemini-2.5-flash">
+    </div>
+    <div>
+      <label for="geminiApiKey">Google Studio API Key:</label>
+      <input type="password" id="geminiApiKey" placeholder="Enter Gemini API Key">
+    </div>
   </div>
 
   <button id="save">Save Settings</button>

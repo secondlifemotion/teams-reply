@@ -1,10 +1,11 @@
 // Restore options from chrome.storage
 const restoreOptions = () => {
   chrome.storage.local.get(
-    { provider: 'ollama', ollamaModel: 'llama3', geminiApiKey: '' },
+    { provider: 'ollama', ollamaModel: 'llama3', geminiModel: 'gemini-2.5-flash', geminiApiKey: '' },
     (items) => {
       document.getElementById('provider').value = items.provider;
       document.getElementById('ollamaModel').value = items.ollamaModel;
+      document.getElementById('geminiModel').value = items.geminiModel;
       document.getElementById('geminiApiKey').value = items.geminiApiKey;
       toggleFields();
     }
@@ -15,10 +16,11 @@ const restoreOptions = () => {
 const saveOptions = () => {
   const provider = document.getElementById('provider').value;
   const ollamaModel = document.getElementById('ollamaModel').value;
+  const geminiModel = document.getElementById('geminiModel').value;
   const geminiApiKey = document.getElementById('geminiApiKey').value;
 
   chrome.storage.local.set(
-    { provider, ollamaModel, geminiApiKey },
+    { provider, ollamaModel, geminiModel, geminiApiKey },
     () => {
       // Update status to let user know options were saved.
       const status = document.getElementById('status');
