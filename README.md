@@ -7,7 +7,10 @@ A Manifest V3 Chrome Extension that acts as an AI-powered reply assistant for th
 1. **Google Chrome** (or a Chromium-based browser).
 2. **AI Provider (Choose one)**:
    - **Local (Ollama)**: A local instance of [Ollama](https://ollama.ai/) running on your machine (`http://localhost:11434`). The extension defaults to the `llama3` model.
+     **Important for Chrome Extensions:** You must configure your Ollama server to accept CORS requests from the browser extension by setting the `OLLAMA_ORIGINS` environment variable to `*` before starting the service. If you do not do this, you will receive a 403 Forbidden error.
      ```bash
+     # Example for macOS/Linux terminal:
+     export OLLAMA_ORIGINS="*"
      ollama run llama3
      ```
    - **Cloud (Google Gemini)**: A valid [Google Gemini API Key](https://aistudio.google.com/app/apikey).
