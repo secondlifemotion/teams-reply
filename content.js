@@ -43,31 +43,63 @@ function injectReply(reply) {
   // We look for common attributes or roles
   const composeBox = document.querySelector('div[contenteditable="true"], div[data-tid="ckeditor-compose-area"]');
 
+  const handleFallback = () => {
+    console.warn('AI Reply Assistant: Injection seemingly failed. Triggering fallback UI.');
+    try {
+      navigator.clipboard.writeText(reply).catch(() => {});
+    } catch(e) {}
+    prompt('AI Reply (Injection failed, text copied to clipboard. Press Ctrl+C/Cmd+C to copy manually just in case):', reply);
+  };
+
   if (composeBox) {
-    // Attempt to focus the compose box
-    composeBox.focus();
+    try {
+      // Attempt to focus the compose box
+      composeBox.focus();
 
-    // Using document.execCommand to insert text as it simulates user input better
-    // for some complex rich text editors than directly setting innerText/innerHTML
-    const success = document.execCommand('insertText', false, reply);
+      // Ensure cursor is placed correctly in the rich text editor before inserting
+      const selection = window.getSelection();
+      if (selection) {
+        const range = document.createRange();
+        range.selectNodeContents(composeBox);
+        range.collapse(false); // collapse to end
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
 
-    if (!success) {
-      // Fallback if execCommand fails
-      composeBox.textContent = reply;
+      // Dispatch beforeinput to mimic real user interaction for React
+      composeBox.dispatchEvent(new InputEvent('beforeinput', { inputType: 'insertText', data: reply, bubbles: true, cancelable: true }));
+
+      // Using document.execCommand to insert text as it simulates user input better
+      // for some complex rich text editors than directly setting innerText/innerHTML
+      let success = document.execCommand('insertText', false, reply);
+
+      if (!success) {
+        // Fallback: simulated paste event for stubborn React editors
+        const dataTransfer = new DataTransfer();
+        dataTransfer.setData('text/plain', reply);
+        const pasteEvent = new ClipboardEvent('paste', {
+          clipboardData: dataTransfer,
+          bubbles: true,
+          cancelable: true
+        });
+        composeBox.dispatchEvent(pasteEvent);
+      }
+
       // Dispatch an input event so any React/Angular bindings notice the change
       composeBox.dispatchEvent(new Event('input', { bubbles: true }));
+
+      // Verify if injection worked (either via execCommand or fallback)
+      setTimeout(() => {
+        if (!composeBox.textContent.includes(reply.trim()) && !composeBox.innerHTML.includes(reply.trim())) {
+           handleFallback();
+        }
+      }, 150);
+    } catch (e) {
+      console.error("AI Reply Assistant: Error during injection attempt:", e);
+      handleFallback();
     }
-
-    // Verify if injection worked (either via execCommand or fallback)
-    setTimeout(() => {
-      if (!composeBox.textContent.includes(reply.trim()) && !composeBox.innerHTML.includes(reply.trim())) {
-        console.warn('AI Reply Assistant: Injection seemingly failed. Triggering fallback alert.');
-        alert('AI Reply (Injection failed, please copy manually):\n\n' + reply);
-      }
-    }, 100);
-
   } else {
-    alert('AI Reply: Could not find the compose box to insert the text. Please copy this manually:\n\n' + reply);
+    handleFallback();
   }
 }
 
